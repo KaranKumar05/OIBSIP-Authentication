@@ -3,17 +3,16 @@ let router = express.Router();
 import jwt from 'jsonwebtoken' 
 import { stringToHash, varifyHash } from 'bcrypt-inzi' 
 import { client } from '../mongoDb.mjs'
-const userCollection = client.db('OIBSIP-Auth').collection("Users");
+const userCollection = client.db('OBISIPAuth').collection("Users");
 
 router.post('/login', async (req, res, next) => {
     if (
-        !req.body?.username
+        !req.body.username
         || !req.body.password
     ) {
         res.status(403).send(
             `Required Parameters Missing
-                Please Fill All the Fields
-                email : "abc@gmail.com"
+                username : "Karan Kumar"
                 Password: "Password"`
         );
         return;
@@ -36,7 +35,6 @@ router.post('/login', async (req, res, next) => {
                 const token = jwt.sign({  
                     isAdmin: false,
                     username: req.body.username,
-                    email: req.body.email,
                 }, process.env.SECRET_KEY, {
                     expiresIn: '1h' 
                 });  
@@ -49,7 +47,7 @@ router.post('/login', async (req, res, next) => {
                 });
             } else {
                 res.status(403).send({
-                    message: "Email & Password Incorrect"
+                    message: "Username & Password Incorrect"
                 });
                 return;
             }
@@ -73,7 +71,6 @@ router.post('/signup', async (req, res, next) => {
                 Please Fill All the Fields
                 
                 username : "xyz",
-                email : "abc@gmail.com",
                 Password: "Password"`
         );
         return;
@@ -89,7 +86,6 @@ router.post('/signup', async (req, res, next) => {
             const passwordHash = await stringToHash(req.body.password) 
             const insertResponse = await userCollection.insertOne({
                 username: req.body.username,
-                email: req.body.email,
                 password: passwordHash,
                 CreatedOn: new Date
             });
@@ -99,7 +95,7 @@ router.post('/signup', async (req, res, next) => {
             })
         } else {
             res.status(403).send({
-                message: "The Email is Already Registered"
+                message: "The Username is Already Exists"
             });
         }
     } catch (err) {

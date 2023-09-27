@@ -1,6 +1,6 @@
 import express from 'express';
 import path from 'path';
-import authRouter from './routes/auth.mjs'
+import authRouter from './router/auth.mjs'
 import 'dotenv/config' //Environment variable (process.env)
 import cookieParser from 'cookie-parser'
 import jwt from 'jsonwebtoken' // To verify JW token 
