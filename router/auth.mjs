@@ -1,7 +1,7 @@
 import express from 'express';
 let router = express.Router();
-import jwt from 'jsonwebtoken' 
-import { stringToHash, varifyHash } from 'bcrypt-inzi' 
+import jwt from 'jsonwebtoken'
+import { stringToHash, varifyHash } from 'bcrypt-inzi'
 import { client } from '../mongoDb.mjs'
 const userCollection = client.db('OBISIPAuth').collection("Users");
 
@@ -24,30 +24,33 @@ router.post('/login', async (req, res, next) => {
         let result = await userCollection.findOne({ username: req.body.username });
         console.log(result);
 
-        if (!result) {  
+        if (!result) {
             res.status(403).send({
-                message: "Username & Password Incorrect"
+                message: "Username & Password Incorrect",
+                username: result.username
             });
             return;
         } else {
-            const isMatch = await varifyHash(req.body.password, result.password) 
-            if (isMatch) { 
-                const token = jwt.sign({  
+            const isMatch = await varifyHash(req.body.password, result.password)
+            if (isMatch) {
+                const token = jwt.sign({
                     isAdmin: false,
                     username: req.body.username,
                 }, process.env.SECRET_KEY, {
-                    expiresIn: '1h' 
-                });  
+                    expiresIn: '1h'
+                });
                 res.cookie('token', token, {
-                    httpOnly: true, 
+                    httpOnly: true,
                     secure: true,
                 })
                 res.send({
                     message: "Login Successfully",
+                    username: req.body.username
                 });
             } else {
                 res.status(403).send({
-                    message: "Username & Password Incorrect"
+                    message: "Username & Password Incorrect",
+
                 });
                 return;
             }
@@ -62,7 +65,7 @@ router.post('/login', async (req, res, next) => {
 
 
 router.post('/signup', async (req, res, next) => {
-    if ( 
+    if (
         !req.body?.username
         || !req.body?.password
     ) {
@@ -76,14 +79,14 @@ router.post('/signup', async (req, res, next) => {
         return;
     }
 
-    req.body.username = req.body.username.toLowerCase(); 
+    req.body.username = req.body.username.toLowerCase();
 
     try {
-        let result = await userCollection.findOne({ username: req.body.username }); 
+        let result = await userCollection.findOne({ username: req.body.username });
         console.log(result);
 
         if (!result) {
-            const passwordHash = await stringToHash(req.body.password) 
+            const passwordHash = await stringToHash(req.body.password)
             const insertResponse = await userCollection.insertOne({
                 username: req.body.username,
                 password: passwordHash,
@@ -91,7 +94,8 @@ router.post('/signup', async (req, res, next) => {
             });
             console.log(`Insert Response: ${insertResponse}`);
             res.send({
-                message: "Signup Successfully"
+                message: "Signup Successfully",
+                username: req.body.username
             })
         } else {
             res.status(403).send({

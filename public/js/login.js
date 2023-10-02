@@ -12,11 +12,13 @@ document.querySelector('#login_form')
                 password: password
             });
             console.log("Respond: ", resp.status)
-            if(resp.status === 200){
+            if (resp.status === 200) {
                 alert("Login Successfully");
                 // window.location.href = '/page/index.html'
+                window.location.href = '/securePage/index.html'
+
             }
-        } catch(e) {
+        } catch (e) {
             alert("Invalid Username or Password");
             console.log(e);
         }

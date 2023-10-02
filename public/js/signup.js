@@ -14,7 +14,7 @@ document.querySelector('#signup_form')
             console.log("Respond: ", resp.status)
             if(resp.status === 200){
                 alert(resp.data.message);
-                // window.location.href = '/page/index.html'
+                window.location.href = '/securePage/index.html'
             }
         } catch(e) {
             alert("Username Already Exists");
